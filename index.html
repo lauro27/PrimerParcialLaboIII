@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primer Parcial - Lamas</title> 
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="js/main.js"></script>
+</head>
+<body>
+    <div id="mainDiv">
+    <div id="spinner" hidden></div>
+    <table id="tabla">
+        <tr>
+            <th>Nombre</th>
+            <th>Cuatrimestre</th>
+            <th>Fecha Final</th>
+            <th>Turno</th>
+        </tr>
+    </table>
+    <div id="editMateria" hidden>
+        <input type="button" value="Cancelar" id="btnCancelar", class="btn">
+        <label id="error" hidden></label>
+        <br>
+        <label for="txtNombre">Nombre</label>
+        <br>
+        <input type="text" name="txtNombre" id="txtNombre">
+        <br>
+        <label for="dateFecha">Fecha final</label>
+        <br>
+        <input type="date" name="dateFecha" id="dateFecha">
+        <br>
+        <label for="turno">Turno</label>
+        <br>
+        <input type="radio" name="radioTurno" id="turnoManana", value="manana"> 
+        <label for="radioTurno">Mañana</label>
+        <br>
+        <input type="radio" name="radioTurno" id="turnoNoche", value="noche"> 
+        <label for="radioTurno">Noche</label>
+        <br>
+        <input type="button" value="Eliminar" id="btnEliminar" class="btn">
+        <input type="button" value="Modificar" id="btnModificar" class="btn">
+    </div>
+</div>
+</body>

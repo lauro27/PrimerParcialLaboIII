@@ -77,9 +77,14 @@ function editarFila(e)
     var turno = fila.childNodes[3].childNodes[0].nodeValue;
     var id = fila.childNodes[4].childNodes[0].nodeValue;
 
+    //Intento de formatear fecha antes de pasar al formulario
+    var fechaArray = fecha.split("/");
+    var newDate = fechaArray[1].concat("/",fechaArray[0],"/",fechaArray[2]);
+
+    //Setear formulario
     $("txtNombre").value = nombre;
     $("selectCuatrimestre").value = cuatrimestre;
-    $("dateFecha").value = new Date(fecha);
+    $("dateFecha").value = new Date(newDate);
 
     if (turno == "Mañana") {
         $("turnoManana").checked = true;
@@ -107,7 +112,8 @@ function editarFila(e)
             validoNombre = false;
             errorMsg = errorMsg.concat("Nombre debe ser superior a 6.<br>");
         }
-        if (new Date($("dateFecha").value) < new Date(Date.now())) {
+        let fechaComparar = new Date($("dateFecha").value);
+        if (fechaComparar < new Date() || fechaComparar == "Invalid Date") {
             validoFecha = false;
             errorMsg = errorMsg.concat("Fecha debe ser posterior a hoy.<br>");
         }
@@ -163,6 +169,7 @@ function editarFila(e)
         }
     }
 
+    //ELIMINAR
     $("btnEliminar").onclick=function()
     {
         var jsonMateria={

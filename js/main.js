@@ -18,7 +18,6 @@ function httpLoader()
         {
             $("spinner").hidden = true;
             var arrayJson=JSON.parse(peticion.responseText);
-            //console.log(arrayJson);
     
             for (let index = 0; index < arrayJson.length; index++) 
             {
@@ -50,7 +49,7 @@ function nuevaFila(materia,tabla)
     tdcuatrimestre.appendChild(document.createTextNode(cuatrimestre));
     tdfecha.appendChild(document.createTextNode(fecha));
     tdturno.appendChild(document.createTextNode(turno));
-    tdid.style = "display:none;";
+    //tdid.style = "display:none;";
 
     nuevaFila.appendChild(tdnombre);
     nuevaFila.appendChild(tdcuatrimestre);
@@ -65,18 +64,21 @@ function nuevaFila(materia,tabla)
 
 function editarFila(e)
 {
+    $("error").hidden = true;
     var ventana = $("editMateria");
 
     ventana.hidden = false;
 
     var tabla = $("tabla");
     var fila = e.target.parentNode;
-    var nombre=fila.childNodes[0].childNodes[0].nodeValue;
-    var cuatrimestre=fila.childNodes[1].childNodes[0].nodeValue;
-    var fecha=fila.childNodes[2].childNodes[0].nodeValue;
-    var turno=fila.childNodes[3].childNodes[0].nodeValue;
+    var nombre = fila.childNodes[0].childNodes[0].nodeValue;
+    var cuatrimestre = fila.childNodes[1].childNodes[0].nodeValue;
+    var fecha = fila.childNodes[2].childNodes[0].nodeValue;
+    var turno = fila.childNodes[3].childNodes[0].nodeValue;
+    var id = fila.childNodes[4].childNodes[0].nodeValue;
 
     $("txtNombre").value = nombre;
+    $("selectCuatrimestre").value = cuatrimestre;
     $("dateFecha").value = fecha;
 
     if (turno == "Mañana") {
@@ -90,6 +92,82 @@ function editarFila(e)
     $("btnCancelar").onclick=function()
     {
         editMateria.hidden=true;
+    }
+
+    //MODIFICAR
+    $("btnModificar").onclick=function()
+    {
+        let validoNombre =true;
+        let validoFecha =true;
+        let validoTurno =true;
+        let errorMsg = "";
+
+        if ($("txtNombre").value.length < 6) 
+        {
+            validoNombre = false;
+            errorMsg = errorMsg.concat("Nombre debe ser superior a 6.<br>");
+        }
+        if (new Date($("dateFecha").value)<= new Date(Date.now())) {
+            validoFecha = false;
+            errorMsg = errorMsg.concat("Fecha debe ser posterior a hoy.<br>");
+        }
+        if (!($("turnoManana").checked || $("turnoNoche").checked))
+        {
+            validoTurno = false;
+            errorMsg = errorMsg.concat("Turno debe ser seleccionado.<br>");
+        }
+
+        if(validoNombre && validoFecha && validoTurno)
+        {
+            var nombreInput = $("txtNombre").value;
+            var cuatrimestreInput= $("selectCuatrimestre").value;
+            var fechaInput = $("dateFecha").value;
+            var turnoInput = "Noche";
+            if($("turnoManana".checked))
+            {
+                turnoInput = "Mañana";
+            }
+
+            var jsonMateria={
+                "nombre":nombreInput,
+                "cuatrimestre":cuatrimestreInput,
+                "fecha":fechaInput,
+                "turno":turnoInput
+            }
+
+            var peticion=new XMLHttpRequest();
+            peticion.open("POST","http://localhost:3000/editar");
+            peticion.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            peticion.send(JSON.stringify(jsonMateria));
+            $("spinner").hidden=false;
+
+            peticion.onreadystatechange= function() 
+            {
+                
+                if(peticion.status == 200 && peticion.readyState == 4)
+                {
+                    $("spinner").hidden=true;
+                    
+                    fila.childNodes[0].childNodes[0].nodeValue=nombreInput;
+                    fila.childNodes[1].childNodes[0].nodeValue=cuatrimestreInput;
+                    fila.childNodes[2].childNodes[0].nodeValue=fechaInput;
+                    fila.childNodes[3].childNodes[0].nodeValue=turnoInput;
+                }
+
+
+            }
+
+
+
+        }
+        else
+        {
+            $("error").hidden = false;
+            $("error").innerHTML = errorMsg;
+        }
+
+
+
     }
 
 } 

@@ -7,17 +7,17 @@ function $(id) {
 function httpLoader()
 {
     var tabla=$("tabla");
-    var peticion=new XMLHttpRequest();  
-    peticion.open("GET","http://localhost:3000/materias",true);
-    peticion.send();
+    var request=new XMLHttpRequest();  
+    request.open("GET","http://localhost:3000/materias",true);
+    request.send();
     $("spinner").hidden = false;
 
-    peticion.onreadystatechange = function()
+    request.onreadystatechange = function()
     {
-        if(peticion.status== 200 && peticion.readyState == 4)
+        if(request.status== 200 && request.readyState == 4)
         {
             $("spinner").hidden = true;
-            var arrayJson=JSON.parse(peticion.responseText);
+            var arrayJson=JSON.parse(request.responseText);
     
             for (let index = 0; index < arrayJson.length; index++) 
             {
@@ -49,7 +49,7 @@ function nuevaFila(materia,tabla)
     tdcuatrimestre.appendChild(document.createTextNode(cuatrimestre));
     tdfecha.appendChild(document.createTextNode(fecha));
     tdturno.appendChild(document.createTextNode(turno));
-    //tdid.style = "display:none;";
+    tdid.style = "display:none;";
 
     nuevaFila.appendChild(tdnombre);
     nuevaFila.appendChild(tdcuatrimestre);
@@ -79,7 +79,7 @@ function editarFila(e)
 
     $("txtNombre").value = nombre;
     $("selectCuatrimestre").value = cuatrimestre;
-    $("dateFecha").value = fecha;
+    $("dateFecha").value = new Date(fecha);
 
     if (turno == "Mañana") {
         $("turnoManana").checked = true;
@@ -107,7 +107,7 @@ function editarFila(e)
             validoNombre = false;
             errorMsg = errorMsg.concat("Nombre debe ser superior a 6.<br>");
         }
-        if (new Date($("dateFecha").value)<= new Date(Date.now())) {
+        if (new Date($("dateFecha").value) < new Date(Date.now())) {
             validoFecha = false;
             errorMsg = errorMsg.concat("Fecha debe ser posterior a hoy.<br>");
         }
@@ -135,39 +135,58 @@ function editarFila(e)
                 "turno":turnoInput
             }
 
-            var peticion=new XMLHttpRequest();
-            peticion.open("POST","http://localhost:3000/editar");
-            peticion.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            peticion.send(JSON.stringify(jsonMateria));
+            var request=new XMLHttpRequest();
+            request.open("POST","http://localhost:3000/editar");
+            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            request.send(JSON.stringify(jsonMateria));
             $("spinner").hidden=false;
 
-            peticion.onreadystatechange= function() 
+            request.onreadystatechange= function() 
             {
                 
-                if(peticion.status == 200 && peticion.readyState == 4)
+                if(request.status == 200 && request.readyState == 4)
                 {
                     $("spinner").hidden=true;
+                    $("editMateria").hidden = true;
                     
                     fila.childNodes[0].childNodes[0].nodeValue=nombreInput;
                     fila.childNodes[1].childNodes[0].nodeValue=cuatrimestreInput;
                     fila.childNodes[2].childNodes[0].nodeValue=fechaInput;
                     fila.childNodes[3].childNodes[0].nodeValue=turnoInput;
                 }
-
-
             }
-
-
-
         }
         else
         {
             $("error").hidden = false;
             $("error").innerHTML = errorMsg;
         }
+    }
 
+    $("btnEliminar").onclick=function()
+    {
+        var jsonMateria={
+            "nombre":nombre,
+            "cuatrimestre":cuatrimestre,
+            "fecha":fecha,
+            "turno":turno,
+            "id":id
+        }
+        var request=new XMLHttpRequest();
+        request.open("POST","http://localhost:3000/eliminar");
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.send(JSON.stringify(jsonMateria));
+        $("spinner").hidden=false;
 
-
+        request.onreadystatechange= function() 
+        {                
+            if(request.status == 200 && request.readyState == 4)
+            {
+                $("spinner").hidden=true;
+                tabla.removeChild(fila);
+                $("editMateria").hidden = true;
+            }
+        }
     }
 
 } 
